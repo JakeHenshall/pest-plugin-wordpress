@@ -1,8 +1,8 @@
 # WordPress Pest Testing Framework
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/jakehenshall/pest-plugin-wordpress.svg?style=flat-square)](https://packagist.org/packages/jakehenshall/pest-plugin-wordpress)
-[![Total Downloads](https://img.shields.io/packagist/dt/jakehenshall/pest-plugin-wordpress.svg?style=flat-square)](https://packagist.org/packages/jakehenshall/pest-plugin-wordpress)
-[![License](https://img.shields.io/packagist/l/jakehenshall/pest-plugin-wordpress.svg?style=flat-square)](https://packagist.org/packages/jakehenshall/pest-plugin-wordpress)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/jakehenshall/pest-plugin-wordpress?style=flat-square)](https://packagist.org/packages/jakehenshall/pest-plugin-wordpress)
+[![Total Downloads](https://img.shields.io/packagist/dt/jakehenshall/pest-plugin-wordpress?style=flat-square)](https://packagist.org/packages/jakehenshall/pest-plugin-wordpress)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
 **The complete WordPress testing solution.** One package includes everything: Pest PHP v4, PHPStan v2.1, SQLite, MySQL support, WordPress stubs, and 150+ helper functions. Write beautiful, Laravel-style tests with zero configuration.
 

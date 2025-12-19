@@ -95,9 +95,9 @@
     "bin/wp-pest"
   ],
   "scripts": {
-    "test": "pest",
-    "test:unit": "pest --group=unit",
-    "test:integration": "pest --group=integration",
+    "test": "vendor/bin/pest",
+    "test:unit": "vendor/bin/pest --group=unit",
+    "test:integration": "vendor/bin/pest --group=integration",
     "phpstan": "phpstan analyse --memory-limit=2G",
     "phpstan:baseline": "phpstan analyse --memory-limit=2G --generate-baseline"
   },

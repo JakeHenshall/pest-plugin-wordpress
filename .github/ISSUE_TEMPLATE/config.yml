@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/JakeHenshall/pest-plugin-wordpress/blob/main/README.md
+    about: Check the comprehensive documentation for guides and examples
+  - name: 💬 GitHub Discussions
+    url: https://github.com/JakeHenshall/pest-plugin-wordpress/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🆘 Support & Help
+    url: https://github.com/JakeHenshall/pest-plugin-wordpress/discussions/categories/q-a
+    about: Get help with using the package
+

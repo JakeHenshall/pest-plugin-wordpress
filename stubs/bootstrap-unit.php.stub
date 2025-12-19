@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+$autoloadFile = dirname(__DIR__, 2) . '/vendor/autoload.php';
+
+if (!file_exists($autoloadFile)) {
+    throw new RuntimeException(
+        'Autoload file not found. Please run: composer install'
+    );
+}
+
+require_once $autoloadFile;
+
+

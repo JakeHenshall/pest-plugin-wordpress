@@ -1,0 +1,231 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Caught class WPDieException not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Ajax.php
+
+		-
+			message: '#^Parameter \#1 \$output of class PestPluginWordPress\\AjaxResponse constructor expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Ajax.php
+
+		-
+			message: '#^Undefined variable\: \$this$#'
+			identifier: variable.undefined
+			count: 27
+			path: src/Assertions.php
+
+		-
+			message: '#^Parameter \#2 \$content of method Symfony\\Component\\Filesystem\\Filesystem\:\:dumpFile\(\) expects resource\|string, string\|false given\.$#'
+			identifier: argument.type
+			count: 8
+			path: src/Commands/SetupCommand.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Commands/SetupCommand.php
+
+		-
+			message: '#^Property PestPluginWordPress\\Commands\\SetupCommand\:\:\$workingDir \(string\) does not accept string\|false\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Commands/SetupCommand.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class WP_CLI\.$#'
+			identifier: class.notFound
+			count: 10
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Call to static method launch\(\) on an unknown class WP_CLI\.$#'
+			identifier: class.notFound
+			count: 4
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Call to static method line\(\) on an unknown class WP_CLI\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Call to static method success\(\) on an unknown class WP_CLI\.$#'
+			identifier: class.notFound
+			count: 4
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Method PestPluginWordPress\\Commands\\WpCliSetupCommand\:\:__invoke\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Method PestPluginWordPress\\Commands\\WpCliSetupCommand\:\:__invoke\(\) has parameter \$assoc_args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Method PestPluginWordPress\\Commands\\WpCliTestCommand\:\:all\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Method PestPluginWordPress\\Commands\\WpCliTestCommand\:\:all\(\) has parameter \$assoc_args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Method PestPluginWordPress\\Commands\\WpCliTestCommand\:\:integration\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Method PestPluginWordPress\\Commands\\WpCliTestCommand\:\:integration\(\) has parameter \$assoc_args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Method PestPluginWordPress\\Commands\\WpCliTestCommand\:\:unit\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Method PestPluginWordPress\\Commands\\WpCliTestCommand\:\:unit\(\) has parameter \$assoc_args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Commands/WpCliCommands.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<array\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Cron.php
+
+		-
+			message: '#^Parameter \#1 \$hook_name of function do_action expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cron.php
+
+		-
+			message: '#^Parameter \#1 \$hook_name of function do_action_ref_array expects non\-empty\-string, \(int\|string\) given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Cron.php
+
+		-
+			message: '#^Parameter \#2 \$args of function wp_next_scheduled expects list\<mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Cron.php
+
+		-
+			message: '#^Parameter \#3 \$args of function wp_schedule_single_event expects list\<mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cron.php
+
+		-
+			message: '#^Result of \|\| is always false\.$#'
+			identifier: booleanOr.alwaysFalse
+			count: 3
+			path: src/Cron.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between array\<array\> and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 3
+			path: src/Cron.php
+
+		-
+			message: '#^Parameter \#1 \$identifier of static method PestPluginWordPress\\DatabaseHelpers\:\:validateIdentifier\(\) expects string, int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Database.php
+
+		-
+			message: '#^Method PestPluginWordPress\\EmailTester\:\:interceptEmail\(\) has parameter \$atts with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Email.php
+
+		-
+			message: '#^Method PestPluginWordPress\\EmailTester\:\:interceptEmail\(\) has parameter \$null with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Email.php
+
+		-
+			message: '#^Call to function is_wp_error\(\) with int\<0, max\> will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 2
+			path: src/Factory.php
+
+		-
+			message: '#^Parameter \#1 \$width of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Files.php
+
+		-
+			message: '#^Parameter \#2 \$height of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Files.php
+
+		-
+			message: '#^Parameter \#4 \$color of function imagefill expects int, int\<0, max\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Files.php
+
+		-
+			message: '#^Parameter \#2 \$status of class PestPluginWordPress\\HttpResponse constructor expects int, int\<min, \-1\>\|int\<1, max\>\|true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http.php
+
+		-
+			message: '#^Method PestPluginWordPress\\HttpMock\:\:interceptRequest\(\) has parameter \$preempt with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/HttpMocking.php
+
+		-
+			message: '#^Method PestPluginWordPress\\MenuHelpers\:\:addItem\(\) should return int but returns int\|WP_Error\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Menus.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between array and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Menus.php
+
+		-
+			message: '#^Found usage of constant MULTISITE\. Use is_multisite\(\) instead\.$#'
+			identifier: phpstanWP.wpConstant.fetch
+			count: 1
+			path: src/Multisite.php
+
+		-
+			message: '#^Call to function is_wp_error\(\) with WP_REST_Response will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/RestApi.php
+
+

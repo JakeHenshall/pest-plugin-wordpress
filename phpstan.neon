@@ -1,0 +1,37 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 8
+    
+    paths:
+        - src
+        - bin
+    
+    # WordPress and Pest stubs for better type understanding
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    
+    # Ignore patterns
+    excludePaths:
+        - stubs/*
+        - vendor/*
+    
+    # Ignore specific errors that are expected in WordPress/Pest context
+    ignoreErrors:
+        # Pest\browser function is loaded by pest-plugin-browser at runtime
+        - '#Used function Pest\\browser not found#'
+        - '#Function Pest\\browser not found#'
+        
+        # test() return type issues with Pest
+        - '#Call to an undefined method Pest\\PendingCalls\\TestCall#'
+        
+        # Missing array/generic type hints (common in WordPress)
+        -
+            identifier: missingType.iterableValue
+        
+        # Mixed types are common in WordPress due to legacy code
+        - '#has no return type specified#'
+        - '#Property .* has no type specified#'
+

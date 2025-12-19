@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+define('ABSPATH', __DIR__ . '/../../wp/src/');
+
+$table_prefix = 'wptests_';
+
+define('WP_TESTS_DOMAIN', 'example.org');
+define('WP_TESTS_EMAIL', 'admin@example.org');
+define('WP_TESTS_TITLE', 'Test Site');
+
+define('WP_PHP_BINARY', 'php');
+
+define('WPLANG', '');
+
+// SQLite configuration
+$db_file = dirname(__DIR__, 2) . '/.wordpress-test.db';
+
+define('DB_FILE', $db_file);
+define('DB_DIR', dirname($db_file));
+
+// Standard WordPress database constants (required but not used with SQLite)
+define('DB_NAME', 'wordpress_test');
+define('DB_USER', 'root');
+define('DB_PASSWORD', '');
+define('DB_HOST', 'localhost');
+define('DB_CHARSET', 'utf8');
+define('DB_COLLATE', '');
+
+// Use SQLite
+define('USE_MYSQL', false);
+

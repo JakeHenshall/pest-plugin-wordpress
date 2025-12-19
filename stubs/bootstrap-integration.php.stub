@@ -1,0 +1,80 @@
+<?php
+
+declare(strict_types=1);
+
+// Define the path to PHPUnit Polyfills
+if (!defined('WP_TESTS_PHPUNIT_POLYFILLS_PATH')) {
+    $polyfills_path = dirname(__DIR__, 2) . '/vendor/yoast/phpunit-polyfills';
+    if (file_exists($polyfills_path)) {
+        define('WP_TESTS_PHPUNIT_POLYFILLS_PATH', $polyfills_path);
+    }
+}
+
+if (!defined('WP_TESTS_CONFIG_FILE_PATH')) {
+    define('WP_TESTS_CONFIG_FILE_PATH', __DIR__ . '/wp-tests-config.php');
+}
+
+// Load SQLite integration before WordPress
+// Try multiple possible locations for the SQLite drop-in
+$sqlite_paths = [
+    dirname(__DIR__, 2) . '/wp-content/wp-sqlite-db/src/db.php', // Composer installer path
+    dirname(__DIR__, 2) . '/vendor/aaemnnosttv/wp-sqlite-db/src/db.php', // Standard vendor path
+];
+
+$sqlite_db_copy = null;
+foreach ($sqlite_paths as $path) {
+    if (file_exists($path)) {
+        $sqlite_db_copy = $path;
+        break;
+    }
+}
+
+$wp_db_dir = dirname(__DIR__, 2) . '/wp/src/wp-content/db.php';
+
+if (file_exists($sqlite_db_copy)) {
+    // Ensure wp-content directory exists
+    $wp_content_dir = dirname($wp_db_dir);
+    if (!is_dir($wp_content_dir)) {
+        mkdir($wp_content_dir, 0755, true);
+    }
+    
+    // Copy SQLite db.php drop-in
+    if (!file_exists($wp_db_dir) || filemtime($sqlite_db_copy) > filemtime($wp_db_dir)) {
+        copy($sqlite_db_copy, $wp_db_dir);
+    }
+}
+
+$_tests_dir = dirname(__DIR__, 2) . '/wp/tests/phpunit';
+
+if (!file_exists($_tests_dir . '/includes/functions.php')) {
+    throw new RuntimeException(
+        'Could not find WordPress test suite. ' .
+        'Please run: vendor/bin/wp-pest setup'
+    );
+}
+
+require_once $_tests_dir . '/includes/functions.php';
+
+function _manually_load_plugin_or_theme(): void
+{
+    $project_path = '{{PROJECT_PATH}}';
+    $full_path = dirname(__DIR__, 2) . '/wp/src/wp-content/' . $project_path;
+    
+    if (file_exists($full_path)) {
+        if (is_dir($full_path)) {
+            // Theme directory - switch theme
+            $theme_slug = basename($full_path);
+            switch_theme($theme_slug);
+        } else {
+            // Plugin file - require it
+            require $full_path;
+        }
+    }
+}
+
+tests_add_filter('muplugins_loaded', '_manually_load_plugin_or_theme');
+
+require $_tests_dir . '/includes/bootstrap.php';
+
+_delete_all_posts();
+

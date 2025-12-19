@@ -1,0 +1,98 @@
+<?php
+
+use PestPluginWordPress\TestCase;
+
+use function PestPluginWordPress\factory;
+use function PestPluginWordPress\get;
+use function PestPluginWordPress\post;
+use function PestPluginWordPress\put;
+use function PestPluginWordPress\patch;
+use function PestPluginWordPress\delete;
+use function PestPluginWordPress\from;
+use function PestPluginWordPress\actingAs;
+use function PestPluginWordPress\actingAsAdmin;
+use function PestPluginWordPress\actingAsEditor;
+use function PestPluginWordPress\actingAsGuest;
+use function PestPluginWordPress\assertAuthenticated;
+use function PestPluginWordPress\assertNotAuthenticated;
+use function PestPluginWordPress\assertUserCan;
+use function PestPluginWordPress\assertUserCannot;
+use function PestPluginWordPress\fakeHttp;
+use function PestPluginWordPress\preventStrayRequests;
+use function PestPluginWordPress\allowStrayRequests;
+use function PestPluginWordPress\assertHttpSent;
+use function PestPluginWordPress\assertHttpNotSent;
+use function PestPluginWordPress\assertHttpSentCount;
+use function PestPluginWordPress\assertPostExists;
+use function PestPluginWordPress\assertPostHasStatus;
+use function PestPluginWordPress\assertTermExists;
+use function PestPluginWordPress\assertUserExists;
+use function PestPluginWordPress\assertUserHasRole;
+use function PestPluginWordPress\assertPostHasTerm;
+use function PestPluginWordPress\assertPostHasMeta;
+use function PestPluginWordPress\assertOptionExists;
+use function PestPluginWordPress\assertOptionEquals;
+use function PestPluginWordPress\assertHookAdded;
+use function PestPluginWordPress\assertFilterAdded;
+use function PestPluginWordPress\assertShortcodeExists;
+use function PestPluginWordPress\assertPostTypeExists;
+use function PestPluginWordPress\assertTaxonomyExists;
+use function PestPluginWordPress\assertQueryHasPosts;
+use function PestPluginWordPress\assertQueryPostCount;
+use function PestPluginWordPress\assertEnqueued;
+use function PestPluginWordPress\assertNotEnqueued;
+use function PestPluginWordPress\fakeEmail;
+use function PestPluginWordPress\assertEmailSent;
+use function PestPluginWordPress\assertEmailNotSent;
+use function PestPluginWordPress\assertEmailSentCount;
+use function PestPluginWordPress\assertEmailSentTo;
+use function PestPluginWordPress\assertNoEmailSent;
+use function PestPluginWordPress\runCron;
+use function PestPluginWordPress\runAllCrons;
+use function PestPluginWordPress\runDueCrons;
+use function PestPluginWordPress\assertCronScheduled;
+use function PestPluginWordPress\assertCronNotScheduled;
+use function PestPluginWordPress\assertCronScheduledAt;
+use function PestPluginWordPress\scheduleCron;
+use function PestPluginWordPress\clearAllCrons;
+use function PestPluginWordPress\truncateTable;
+use function PestPluginWordPress\seedTable;
+use function PestPluginWordPress\assertDatabaseHas;
+use function PestPluginWordPress\assertDatabaseMissing;
+use function PestPluginWordPress\assertDatabaseCount;
+use function PestPluginWordPress\restGet;
+use function PestPluginWordPress\restPost;
+use function PestPluginWordPress\restPut;
+use function PestPluginWordPress\restPatch;
+use function PestPluginWordPress\restDelete;
+use function PestPluginWordPress\activatePlugin;
+use function PestPluginWordPress\deactivatePlugin;
+use function PestPluginWordPress\assertPluginActive;
+use function PestPluginWordPress\assertPluginInactive;
+use function PestPluginWordPress\withYoast;
+use function PestPluginWordPress\withWooCommerce;
+use function PestPluginWordPress\withAcf;
+use function PestPluginWordPress\withPlugin;
+use function PestPluginWordPress\createBlog;
+use function PestPluginWordPress\deleteBlog;
+use function PestPluginWordPress\switchToBlog;
+use function PestPluginWordPress\restoreCurrentBlog;
+use function PestPluginWordPress\assertMultisite;
+use function PestPluginWordPress\assertNotMultisite;
+use function PestPluginWordPress\assertBlogExists;
+use function PestPluginWordPress\fakeUpload;
+use function PestPluginWordPress\fakeImage;
+use function PestPluginWordPress\assertFileUploaded;
+use function PestPluginWordPress\assertImageSize;
+
+require __DIR__ . '/Helpers.php';
+
+if (isUnitTest()) {
+    require_once __DIR__ . '/bootstrap/unit.php';
+} else {
+    require_once __DIR__ . '/bootstrap/integration.php';
+    
+    uses(TestCase::class)->in('Integration');
+}
+
+uses()->in('Unit');

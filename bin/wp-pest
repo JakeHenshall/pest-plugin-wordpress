@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+
+$autoloadFound = false;
+
+$autoloadPaths = [
+    getcwd() . '/vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+];
+
+foreach ($autoloadPaths as $file) {
+    if (file_exists($file)) {
+        require $file;
+        $autoloadFound = true;
+        break;
+    }
+}
+
+if (!$autoloadFound) {
+    fwrite(
+        STDERR,
+        'Error: Unable to locate Composer autoload file.' . PHP_EOL .
+        'Please ensure pest-plugin-wordpress is installed via Composer.' . PHP_EOL .
+        'Tried locations:' . PHP_EOL .
+        '  - ' . getcwd() . '/vendor/autoload.php' . PHP_EOL .
+        '  - ' . __DIR__ . '/../../../autoload.php' . PHP_EOL .
+        '  - ' . __DIR__ . '/../vendor/autoload.php' . PHP_EOL
+    );
+    exit(1);
+}
+
+use PestPluginWordPress\Commands\SetupCommand;
+use Symfony\Component\Console\Application;
+
+$application = new Application('WP Pest', '1.0.0');
+$application->add(new SetupCommand());
+$application->run();
+

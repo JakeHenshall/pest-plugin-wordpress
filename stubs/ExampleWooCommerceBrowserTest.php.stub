@@ -1,0 +1,171 @@
+<?php
+
+use function PestPluginWordPress\{
+    visitWooCommerceProduct,
+    visitWooCommerceCart,
+    visitWooCommerceCheckout,
+    visitWooCommerceShop,
+    visitWordPress,
+    addToCart,
+    assertInCart,
+    fillCheckoutForm,
+    placeOrder,
+    assertOrderComplete,
+    browserLoginAsUser,
+    skipIfBrowserTestingNotAvailable,
+    skipIfWooCommerceNotActive,
+    isUnitTest
+};
+
+if (isUnitTest()) {
+    return;
+}
+
+test('customer can view product page', function () {
+    skipIfBrowserTestingNotAvailable();
+    skipIfWooCommerceNotActive();
+    
+    $productId = factory()::post([
+        'post_type' => 'product',
+        'post_title' => 'Test Product',
+        'post_status' => 'publish',
+    ]);
+    
+    update_post_meta($productId, '_price', '29.99');
+    update_post_meta($productId, '_regular_price', '29.99');
+    
+    $page = visitWooCommerceProduct($productId);
+    
+    $page->assertSee('Test Product');
+    $page->assertSee('29.99');
+    $page->assertSee('Add to cart');
+})->group('browser', 'woocommerce');
+
+test('customer can add product to cart', function () {
+    skipIfBrowserTestingNotAvailable();
+    skipIfWooCommerceNotActive();
+    
+    $productId = factory()::post([
+        'post_type' => 'product',
+        'post_title' => 'Test Product',
+        'post_status' => 'publish',
+    ]);
+    
+    update_post_meta($productId, '_price', '29.99');
+    
+    $page = visitWooCommerceProduct($productId);
+    $page = addToCart($page);
+    
+    $page->assertSee('has been added to your cart');
+})->group('browser', 'woocommerce');
+
+test('customer can view cart', function () {
+    skipIfBrowserTestingNotAvailable();
+    skipIfWooCommerceNotActive();
+    
+    $productId = factory()::post([
+        'post_type' => 'product',
+        'post_title' => 'Test Product',
+        'post_status' => 'publish',
+    ]);
+    
+    update_post_meta($productId, '_price', '29.99');
+    
+    // Add to cart
+    $page = visitWooCommerceProduct($productId);
+    $page = addToCart($page);
+    
+    // View cart
+    $page = visitWooCommerceCart();
+    
+    assertInCart($page, 'Test Product');
+    $page->assertSee('29.99');
+})->group('browser', 'woocommerce');
+
+test('customer can complete checkout', function () {
+    skipIfBrowserTestingNotAvailable();
+    skipIfWooCommerceNotActive();
+    
+    $productId = factory()::post([
+        'post_type' => 'product',
+        'post_title' => 'Test Product',
+        'post_status' => 'publish',
+    ]);
+    
+    update_post_meta($productId, '_price', '29.99');
+    
+    // Add to cart
+    $page = visitWooCommerceProduct($productId);
+    $page = addToCart($page);
+    
+    // Go to checkout
+    $page = visitWooCommerceCheckout();
+    
+    // Fill checkout form
+    $page = fillCheckoutForm($page, [
+        'billing_first_name' => 'John',
+        'billing_last_name' => 'Doe',
+        'billing_email' => 'john@example.com',
+        'billing_phone' => '1234567890',
+        'billing_address_1' => '123 Main St',
+        'billing_city' => 'London',
+        'billing_postcode' => 'SW1A 1AA',
+    ]);
+    
+    // Place order
+    $page = placeOrder($page);
+    
+    assertOrderComplete($page);
+})->group('browser', 'woocommerce');
+
+test('guest customer cannot access my account without login', function () {
+    skipIfBrowserTestingNotAvailable();
+    skipIfWooCommerceNotActive();
+    
+    $page = visitWordPress('my-account');
+    
+    $page->assertSee('Login');
+    $page->assertDontSee('My Account');
+})->group('browser', 'woocommerce');
+
+test('logged in customer can access my account', function () {
+    skipIfBrowserTestingNotAvailable();
+    skipIfWooCommerceNotActive();
+    
+    $userId = factory()::user([
+        'role' => 'customer',
+        'user_login' => 'testcustomer',
+        'user_pass' => 'password123',
+    ]);
+    
+    browserLoginAsUser($userId, 'password123');
+    
+    $page = visitWordPress('my-account');
+    
+    $page->assertSee('My Account');
+    $page->assertSee('Dashboard');
+    $page->assertSee('Orders');
+})->group('browser', 'woocommerce');
+
+test('shop page displays products', function () {
+    skipIfBrowserTestingNotAvailable();
+    skipIfWooCommerceNotActive();
+    
+    // Create multiple products
+    for ($i = 1; $i <= 5; $i++) {
+        $productId = factory()::post([
+            'post_type' => 'product',
+            'post_title' => "Product {$i}",
+            'post_status' => 'publish',
+        ]);
+        
+        update_post_meta($productId, '_price', "2{$i}.99");
+        update_post_meta($productId, '_regular_price', "2{$i}.99");
+    }
+    
+    $page = visitWooCommerceShop();
+    
+    $page->assertSee('Product 1');
+    $page->assertSee('Product 2');
+    $page->assertSee('Product 3');
+})->group('browser', 'woocommerce');

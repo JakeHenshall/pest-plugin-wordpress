@@ -1,0 +1,114 @@
+<?php
+
+if (isUnitTest()) {
+    return;
+}
+
+test('REST API endpoints work', function () {
+    $request = new WP_REST_Request('GET', '/wp/v2/posts');
+    $response = rest_do_request($request);
+    
+    expect($response)->toBeInstanceOf(WP_REST_Response::class)
+        ->and($response->get_status())->toBe(200);
+});
+
+test('can create posts using factory', function () {
+    $postId = factory()::post([
+        'post_title' => 'Factory Test Post',
+    ]);
+    
+    expect($postId)->toBeInt()
+        ->and(get_post($postId))->toBeInstanceOf(WP_Post::class)
+        ->and(get_post($postId)->post_title)->toBe('Factory Test Post');
+});
+
+test('can create multiple posts', function () {
+    $postIds = factory()::posts(3, ['post_status' => 'publish']);
+    
+    expect($postIds)->toHaveCount(3);
+    
+    foreach ($postIds as $postId) {
+        expect(get_post($postId)->post_status)->toBe('publish');
+    }
+});
+
+test('can authenticate as admin', function () {
+    $admin = actingAsAdmin();
+    
+    assertAuthenticated($admin);
+    assertUserCan('manage_options');
+    expect(current_user_can('manage_options'))->toBeTrue();
+});
+
+test('can authenticate as editor', function () {
+    $editor = actingAsEditor();
+    
+    assertAuthenticated($editor);
+    assertUserCan('edit_posts');
+    assertUserCannot('manage_options');
+});
+
+test('guests are not authenticated', function () {
+    actingAsGuest();
+    
+    assertNotAuthenticated();
+    expect(get_current_user_id())->toBe(0);
+});
+
+test('can fake HTTP requests', function () {
+    fakeHttp('https://api.example.com/*', [
+        'body' => json_encode(['status' => 'success', 'data' => 'mocked']),
+        'response' => ['code' => 200],
+    ]);
+    
+    $response = wp_remote_get('https://api.example.com/endpoint');
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    
+    expect($body['status'])->toBe('success');
+    assertHttpSent('https://api.example.com/*');
+});
+
+test('can prevent stray requests', function () {
+    preventStrayRequests();
+    
+    expect(fn() => wp_remote_get('https://unexpected-api.com/test'))
+        ->toThrow(\RuntimeException::class, 'Unexpected HTTP request');
+    
+    allowStrayRequests();
+});
+
+test('can test emails', function () {
+    fakeEmail();
+    
+    wp_mail('test@example.com', 'Test Subject', 'Test message');
+    
+    assertEmailSent('test@example.com');
+    assertEmailSentCount(1);
+});
+
+test('can test REST API', function () {
+    // Get current post count first (using per_page=100 to handle pagination)
+    $initialRequest = new WP_REST_Request('GET', '/wp/v2/posts');
+    $initialRequest->set_param('per_page', 100);
+    $initialResponse = rest_do_request($initialRequest);
+    $initialCount = count($initialResponse->get_data());
+    
+    // Create 3 new posts
+    factory()::posts(3);
+    
+    // Verify we now have 3 more posts
+    $finalRequest = new WP_REST_Request('GET', '/wp/v2/posts');
+    $finalRequest->set_param('per_page', 100);
+    $finalResponse = rest_do_request($finalRequest);
+    
+    expect($finalResponse->get_status())->toBe(200)
+        ->and(count($finalResponse->get_data()))->toBe($initialCount + 3);
+});
+
+test('can fake file uploads', function () {
+    $image = fakeImage('test.jpg', 800, 600);
+    
+    assertFileUploaded($image['id']);
+    expect($image['width'])->toBe(800);
+});
+

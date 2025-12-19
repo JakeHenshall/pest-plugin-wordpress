@@ -1,0 +1,5 @@
+parameters:
+	ignoreErrors:
+		# Add baseline errors here
+		# Run: composer phpstan:baseline to generate
+

@@ -1,0 +1,121 @@
+{
+  "name": "jakehenshall/pest-plugin-wordpress",
+  "description": "The most comprehensive WordPress testing framework built on Pest PHP v4. Includes PHPStan v2.1 for static analysis, SQLite for fast testing, and 150+ helper functions. Test WordPress plugins and themes with Laravel-style syntax. Browser testing, HTTP testing, email mocking, AJAX testing, REST API helpers, test sharding, time travel, and more. Zero configuration required.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "wordpress",
+    "testing",
+    "pest",
+    "phpunit",
+    "phpstan",
+    "static-analysis",
+    "sqlite",
+    "integration-testing",
+    "unit-testing",
+    "browser-testing",
+    "e2e-testing",
+    "wp-testing",
+    "wordpress-plugin",
+    "wordpress-theme",
+    "test-framework",
+    "pest-plugin",
+    "wp-cli",
+    "laravel-style",
+    "test-sharding",
+    "gutenberg",
+    "woocommerce",
+    "yoast",
+    "acf"
+  ],
+  "homepage": "https://github.com/jakehenshall/pest-plugin-wordpress",
+  "readme": "README.md",
+  "authors": [
+    {
+      "name": "Jake Henshall",
+      "email": "jake@nought.digital",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/jakehenshall/pest-plugin-wordpress/issues",
+    "source": "https://github.com/jakehenshall/pest-plugin-wordpress",
+    "docs": "https://github.com/jakehenshall/pest-plugin-wordpress#readme"
+  },
+  "require": {
+    "php": "^8.3.0",
+    "pestphp/pest": "^4.0",
+    "yoast/phpunit-polyfills": "^3.0|^4.0",
+    "symfony/console": "^7.0",
+    "symfony/process": "^7.0",
+    "symfony/filesystem": "^7.0",
+    "phpstan/phpstan": "^2.1",
+    "phpstan/extension-installer": "^1.4",
+    "szepeviktor/phpstan-wordpress": "^2.0",
+    "php-stubs/wordpress-stubs": "^6.9",
+    "aaemnnosttv/wp-sqlite-db": "^1.3"
+  },
+  "require-dev": {
+    "pestphp/pest-plugin-browser": "^4.0"
+  },
+  "suggest": {
+    "pestphp/pest-plugin-browser": "Browser testing support for E2E tests"
+  },
+  "autoload": {
+    "psr-4": {
+      "PestPluginWordPress\\": "src/"
+    },
+    "files": [
+      "src/Http.php",
+      "src/Factory.php",
+      "src/Auth.php",
+      "src/HttpMocking.php",
+      "src/Assertions.php",
+      "src/Email.php",
+      "src/Cron.php",
+      "src/Database.php",
+      "src/RestApi.php",
+      "src/PluginSupport.php",
+      "src/Multisite.php",
+      "src/Files.php",
+      "src/Time.php",
+      "src/Cache.php",
+      "src/Ajax.php",
+      "src/Redirect.php",
+      "src/Blocks.php",
+      "src/AdminNotices.php",
+      "src/Menus.php",
+      "src/Widgets.php",
+      "src/Browser.php",
+      "src/SkipHelpers.php",
+      "src/Commands/WpCliCommands.php"
+    ]
+  },
+  "bin": [
+    "bin/wp-pest"
+  ],
+  "scripts": {
+    "test": "pest",
+    "test:unit": "pest --group=unit",
+    "test:integration": "pest --group=integration",
+    "phpstan": "phpstan analyse --memory-limit=2G",
+    "phpstan:baseline": "phpstan analyse --memory-limit=2G --generate-baseline"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "1.0-dev"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true,
+      "phpstan/extension-installer": true,
+      "composer/installers": true
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

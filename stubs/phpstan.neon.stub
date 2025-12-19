@@ -1,0 +1,23 @@
+parameters:
+    level: 6
+    
+    paths:
+        - .
+    
+    scanFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    
+    excludePaths:
+        - vendor/*
+        - node_modules/*
+        - tests/bootstrap/*
+        - wp/*
+    
+    # WordPress-specific configuration
+    ignoreErrors:
+        # Common WordPress patterns
+        - '#Function apply_filters invoked with [0-9]+ parameters?, 2 required\.#'
+        - '#Function do_action invoked with [0-9]+ parameters?, 1 required\.#'
+        - '#Function add_filter invoked with [0-9]+ parameters?, 2 required\.#'
+        - '#Function add_action invoked with [0-9]+ parameters?, 2 required\.#'
+

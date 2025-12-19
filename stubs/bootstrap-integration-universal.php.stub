@@ -1,0 +1,269 @@
+<?php
+
+declare(strict_types=1);
+
+// ============================================================================
+// WordPress Integration Test Bootstrap
+// Supports both SQLite (simpler) and MySQL (recommended for Local by Flywheel)
+// ============================================================================
+
+echo "Starting WordPress integration tests...\n";
+
+// Check if user wants to use MySQL
+$test_config_path = dirname(__DIR__) . '/test-config.php';
+$use_mysql = file_exists($test_config_path);
+
+if ($use_mysql) {
+    // ========== MySQL Mode (Recommended) ==========
+    echo "Using MySQL database...\n";
+    
+    $config = require $test_config_path;
+    
+    $DB_USER = $config['db_user'] ?? 'root';
+    $DB_PASSWORD = $config['db_password'] ?? 'root';
+    $DB_NAME = $config['db_name'] ?? 'local';
+    $DB_HOST = $config['db_host'] ?? '127.0.0.1';
+    $DB_SOCKET = $config['db_socket'] ?? null;
+    $DB_PORTS = $config['db_ports_to_try'] ?? ['3306'];
+    
+    // Test MySQL connection and create test database
+    $pdo = null;
+    try {
+        if ($DB_SOCKET) {
+            $pdo_dsn = "mysql:unix_socket=$DB_SOCKET";
+            $pdo = new PDO($pdo_dsn, $DB_USER, $DB_PASSWORD, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]);
+        } else {
+            foreach ($DB_PORTS as $port) {
+                try {
+                    $pdo_dsn = "mysql:host=$DB_HOST;port=$port";
+                    $pdo = new PDO($pdo_dsn, $DB_USER, $DB_PASSWORD, [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    ]);
+                    $DB_HOST = "$DB_HOST:$port";
+                    break;
+                } catch (PDOException $e) {
+                    continue;
+                }
+            }
+        }
+        
+        if (!$pdo) {
+            die("ERROR: Could not connect to MySQL.\n");
+        }
+        
+        // Create/recreate test database
+        $test_db_name = $DB_NAME . '_test';
+        $pdo->exec("DROP DATABASE IF EXISTS `$test_db_name`");
+        $pdo->exec("CREATE DATABASE `$test_db_name`");
+        echo "✓ MySQL test database ready: $test_db_name\n";
+        
+        unset($pdo);
+    } catch (PDOException $e) {
+        die("MySQL error: " . $e->getMessage() . "\n");
+    }
+    
+    // Set database constants
+    define('DB_NAME', $test_db_name);
+    define('DB_USER', $DB_USER);
+    define('DB_PASSWORD', $DB_PASSWORD);
+    define('DB_HOST', $DB_SOCKET ? ('localhost:' . $DB_SOCKET) : $DB_HOST);
+    define('DB_CHARSET', 'utf8');
+    define('DB_COLLATE', '');
+    
+} else {
+    // ========== SQLite Mode ==========
+    echo "Using SQLite database (for MySQL, create tests/test-config.php)...\n";
+    
+    // Note: SQLite support requires the wp-sqlite-db package
+    // Install with: composer require --dev aaemnnosttv/wp-sqlite-db
+    
+    $sqlite_paths = [
+        dirname(__DIR__, 2) . '/wp-content/wp-sqlite-db/src/db.php',
+        dirname(__DIR__, 2) . '/vendor/aaemnnosttv/wp-sqlite-db/src/db.php',
+    ];
+    
+    $sqlite_found = false;
+    foreach ($sqlite_paths as $path) {
+        if (file_exists($path)) {
+            $sqlite_found = true;
+            // Copy db.php to WordPress
+            $wp_db_dir = dirname(__DIR__, 2) . '/wp/src/wp-content/db.php';
+            if (!is_dir(dirname($wp_db_dir))) {
+                mkdir(dirname($wp_db_dir), 0755, true);
+            }
+            copy($path, $wp_db_dir);
+            break;
+        }
+    }
+    
+    if (!$sqlite_found) {
+        die("ERROR: SQLite package not found.\n" .
+            "Install with: composer require --dev aaemnnosttv/wp-sqlite-db\n" .
+            "Or use MySQL by creating tests/test-config.php\n");
+    }
+    
+    $db_file = dirname(__DIR__, 2) . '/.wordpress-test.db';
+    if (file_exists($db_file)) {
+        unlink($db_file);
+    }
+    touch($db_file);
+    chmod($db_file, 0666);
+    echo "✓ SQLite database ready\n";
+    
+    // IMPORTANT: DB_DIR and DB_FILE must be separate for SQLite to work
+    // The db.php drop-in will construct the full path as: DB_DIR . '/' . DB_FILE
+    define('DB_DIR', dirname($db_file));        // Directory only
+    define('DB_FILE', basename($db_file));      // Filename only
+    define('DB_HOST', 'sqlite');
+    define('DB_NAME', 'wordpress_test');
+    define('DB_USER', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_CHARSET', 'utf8');
+    define('DB_COLLATE', '');
+}
+
+// WordPress constants
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', false);
+define('WP_DEBUG_DISPLAY', false);
+define('ABSPATH', dirname(__DIR__, 2) . '/wp/src/');
+define('WP_CONTENT_DIR', dirname(__DIR__, 2) . '/wp/src/wp-content');
+define('DISABLE_WP_CRON', true);
+define('WP_AUTO_UPDATE_CORE', false);
+define('AUTOMATIC_UPDATER_DISABLED', true);
+define('WP_USE_THEMES', false);
+define('WP_INSTALLING', true);
+define('SCRIPT_DEBUG', false);
+
+// Multisite constants (optional - set via environment variable)
+if (getenv('MULTISITE') === 'true' || getenv('WP_TESTS_MULTISITE') === '1') {
+    define('MULTISITE', true);
+    define('SUBDOMAIN_INSTALL', false); // Use subdirectory multisite by default
+    define('DOMAIN_CURRENT_SITE', 'example.org');
+    define('PATH_CURRENT_SITE', '/');
+    define('SITE_ID_CURRENT_SITE', 1);
+    define('BLOG_ID_CURRENT_SITE', 1);
+    echo "✓ Multisite enabled\n";
+}
+
+$table_prefix = 'wptests_';
+
+// Load autoload
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+
+// Detect project type and link to WordPress
+$project_source = dirname(__DIR__, 2);
+$project_name = basename($project_source);
+
+// Check if this is a plugin (has a main plugin file) or theme
+$is_plugin = false;
+$plugin_file = null;
+
+// Look for main plugin file (PHP file with Plugin Name header)
+foreach (glob($project_source . '/*.php') as $file) {
+    $content = file_get_contents($file);
+    if (preg_match('/Plugin Name:/i', $content)) {
+        $is_plugin = true;
+        $plugin_file = basename($file);
+        break;
+    }
+}
+
+if ($is_plugin) {
+    // ========== Plugin Setup ==========
+    $plugins_dir = ABSPATH . 'wp-content/plugins';
+    $plugin_link = $plugins_dir . '/' . $project_name;
+    
+    if (!is_dir($plugins_dir)) {
+        mkdir($plugins_dir, 0755, true);
+    }
+    
+    // Create symlink to current plugin
+    if (!file_exists($plugin_link)) {
+        symlink($project_source, $plugin_link);
+        echo "✓ Plugin linked: $project_name\n";
+    }
+} else {
+    // ========== Theme Setup ==========
+    $themes_dir = ABSPATH . 'wp-content/themes';
+    $theme_link = $themes_dir . '/' . $project_name;
+    
+    if (!is_dir($themes_dir)) {
+        mkdir($themes_dir, 0755, true);
+    }
+    
+    // Create symlink to current theme
+    if (!file_exists($theme_link)) {
+        symlink($project_source, $theme_link);
+        echo "✓ Theme linked: $project_name\n";
+    }
+}
+
+// Set $_SERVER variables
+$_SERVER['HTTP_HOST'] = 'example.org';
+$_SERVER['SERVER_NAME'] = 'example.org';
+$_SERVER['REQUEST_URI'] = '/';
+$_SERVER['SERVER_PORT'] = '80';
+$_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['PHP_SELF'] = '/index.php';
+
+// Load WordPress
+echo "Loading WordPress...\n";
+require_once ABSPATH . 'wp-settings.php';
+echo "✓ WordPress loaded\n";
+
+if ($is_plugin) {
+    // ========== Activate Plugin ==========
+    echo "Activating plugin: $project_name...\n";
+    
+    // Load the plugin file
+    $plugin_path = $plugin_link . '/' . $plugin_file;
+    if (file_exists($plugin_path)) {
+        require_once $plugin_path;
+        echo "✓ Plugin loaded\n";
+        
+        // Trigger plugin activation hook
+        do_action('activate_' . $project_name . '/' . $plugin_file);
+        
+        // Mark plugin as active
+        $active_plugins = get_option('active_plugins', []);
+        $plugin_basename = $project_name . '/' . $plugin_file;
+        if (!in_array($plugin_basename, $active_plugins)) {
+            $active_plugins[] = $plugin_basename;
+            update_option('active_plugins', $active_plugins);
+        }
+        
+        // Trigger plugins_loaded and init hooks
+        do_action('plugins_loaded');
+        do_action('init');
+        echo "✓ Plugin activated\n";
+    }
+} else {
+    // ========== Activate Theme ==========
+    echo "Activating theme: $project_name...\n";
+    switch_theme($project_name);
+    echo "✓ Theme activated\n";
+    
+    // Load theme's functions.php
+    $theme_functions = $theme_link . '/functions.php';
+    if (file_exists($theme_functions)) {
+        require_once $theme_functions;
+        echo "✓ Theme functions loaded\n";
+        // Trigger after_setup_theme and init to run theme setup hooks
+        do_action('after_setup_theme');
+        do_action('init');
+    }
+}
+
+// Install WordPress
+echo "Installing WordPress...\n";
+require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+wp_install('Test Site', 'admin', 'admin@example.org', true, '', 'password');
+echo "✓ WordPress installed\n";
+echo "✓ Ready to run tests!\n\n";
+
+

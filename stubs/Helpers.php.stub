@@ -1,0 +1,17 @@
+<?php
+
+if (!function_exists('isUnitTest')) {
+    function isUnitTest(): bool
+    {
+        if (!empty($GLOBALS['argv'])) {
+            // Check for --group=unit or --testsuite=Unit
+            foreach ($GLOBALS['argv'] as $arg) {
+                if ($arg === '--group=unit' || $arg === '--testsuite=Unit' || str_contains($arg, 'tests/Unit')) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+

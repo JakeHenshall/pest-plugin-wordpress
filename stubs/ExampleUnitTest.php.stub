@@ -1,0 +1,18 @@
+<?php
+
+test('example unit test', function () {
+    expect(true)->toBeTrue();
+});
+
+test('basic math works', function () {
+    expect(1 + 1)->toBe(2);
+});
+
+test('strings can be concatenated', function () {
+    $greeting = 'Hello';
+    $name = 'World';
+    
+    expect($greeting . ' ' . $name)->toBe('Hello World');
+});
+
+

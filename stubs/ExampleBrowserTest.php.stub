@@ -1,0 +1,149 @@
+<?php
+
+use function PestPluginWordPress\{
+    visitAdmin,
+    browserLoginAsAdmin,
+    visitBlockEditor,
+    assertLoggedInAs,
+    assertCanSeeAdminBar,
+    assertInBlockEditor,
+    publishPost,
+    assertPostPublished,
+    visitNewPost,
+    visitPluginsPage,
+    visitSettingsPage,
+    visitWordPress,
+    onMobile,
+    onTablet,
+    inDarkMode,
+    skipIfBrowserTestingNotAvailable,
+    isUnitTest
+};
+
+if (isUnitTest()) {
+    return;
+}
+
+test('admin can log in via browser', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    $page = browserLoginAsAdmin();
+    
+    assertLoggedInAs($page, 'admin');
+    assertCanSeeAdminBar($page);
+})->group('browser');
+
+test('can navigate to WordPress dashboard', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    browserLoginAsAdmin();
+    
+    $page = visitAdmin('index.php');
+    
+    $page->assertSee('Dashboard');
+    $page->assertSee('Welcome to WordPress');
+})->group('browser');
+
+test('can create and publish a post', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    browserLoginAsAdmin();
+    
+    $page = visitNewPost();
+    
+    assertInBlockEditor($page);
+    
+    // Add post title
+    $page->type('.editor-post-title__input', 'My Test Post');
+    
+    // Publish the post
+    $page = publishPost($page);
+    
+    assertPostPublished($page);
+})->group('browser');
+
+test('can edit existing post in block editor', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    $postId = factory()::post([
+        'post_title' => 'Test Post',
+        'post_status' => 'draft',
+    ]);
+    
+    browserLoginAsAdmin();
+    
+    $page = visitBlockEditor($postId);
+    
+    assertInBlockEditor($page);
+    $page->assertSee('Test Post');
+})->group('browser');
+
+test('can access plugins page', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    browserLoginAsAdmin();
+    
+    $page = visitPluginsPage();
+    
+    $page->assertSee('Plugins');
+    $page->assertNoJavascriptErrors();
+})->group('browser');
+
+test('can access settings page', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    browserLoginAsAdmin();
+    
+    $page = visitSettingsPage();
+    
+    $page->assertSee('General Settings');
+    $page->assertSee('Site Title');
+})->group('browser');
+
+test('responsive design on mobile', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    $page = visitWordPress('/');
+    
+    onMobile($page)
+        ->assertSee(get_bloginfo('name'))
+        ->assertNoJavascriptErrors();
+})->group('browser');
+
+test('responsive design on tablet', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    $page = visitWordPress('/');
+    
+    onTablet($page)
+        ->assertSee(get_bloginfo('name'))
+        ->assertNoJavascriptErrors();
+})->group('browser');
+
+test('can test in dark mode', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    $page = visitWordPress('/');
+    
+    inDarkMode($page)
+        ->assertSee(get_bloginfo('name'))
+        ->assertNoJavascriptErrors();
+})->group('browser');
+
+test('frontend has no JavaScript errors', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    visitWordPress('/')
+        ->assertNoJavascriptErrors()
+        ->assertNoConsoleLogs();
+})->group('browser', 'smoke');
+
+test('admin area has no JavaScript errors', function () {
+    skipIfBrowserTestingNotAvailable();
+    
+    browserLoginAsAdmin();
+    
+    visitAdmin('index.php')
+        ->assertNoJavascriptErrors()
+        ->assertNoConsoleLogs();
+})->group('browser', 'smoke');

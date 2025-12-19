@@ -1,0 +1,31 @@
+<?php
+/**
+ * MySQL Configuration for Integration Tests
+ * 
+ * This file is OPTIONAL. If it doesn't exist, tests will use SQLite by default.
+ * 
+ * To use MySQL instead (e.g., with Local by Flywheel):
+ * 1. Copy this file to tests/test-config.php
+ * 2. Update the values below with your MySQL connection details
+ * 3. The bootstrap will automatically detect and use MySQL
+ * 
+ * For Local by Flywheel users:
+ * - Find these values in Local app -> Database tab
+ * - Socket path is usually in: ~/Library/Application Support/Local/run/[SITE_ID]/mysql/mysqld.sock
+ */
+
+return [
+    'db_user' => 'root',
+    'db_password' => 'root',
+    'db_name' => 'local', // Your Local site's database name
+    'db_host' => '127.0.0.1',
+    
+    // RECOMMENDED: Use socket connection for Local by Flywheel
+    // Find your socket path in Local app -> Database tab
+    'db_socket' => '/Users/[YOUR_USERNAME]/Library/Application Support/Local/run/[SITE_ID]/mysql/mysqld.sock',
+    
+    // OR: Use TCP ports (will try each one)
+    'db_ports_to_try' => ['3306'], // Add your Local MySQL port if different
+];
+
+

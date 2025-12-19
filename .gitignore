@@ -1,0 +1,47 @@
+# Composer
+/vendor/
+composer.lock
+
+# PHPUnit
+/phpunit.xml
+/.phpunit.result.cache
+/.phpunit.cache/
+
+# WordPress Testing
+/wordpress/
+/wordpress-tests-lib/
+/tmp/
+/wp-tests-config.php
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-*
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Build
+/build/
+/dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage
+/coverage/
+/.coverage/
+/clover.xml
+
+# PHPStan
+/.phpstan/
+/phpstan.neon.local
+

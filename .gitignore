@@ -6,6 +6,7 @@ composer.lock
 /phpunit.xml
 /.phpunit.result.cache
 /.phpunit.cache/
+/tests/.phpunit.cache/
 
 # WordPress Testing
 /wordpress/

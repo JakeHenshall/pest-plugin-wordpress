@@ -1725,6 +1725,10 @@ The MIT License (MIT). Please see [License File](LICENSE) for more information.
 - **Issues**: [GitHub Issues](https://github.com/jakehenshall/pest-plugin-wordpress/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/jakehenshall/pest-plugin-wordpress/discussions)
 
+## Found a Bug?
+
+If you've found a bug or issue, please report it on our [issue tracker](https://github.com/JakeHenshall/pest-plugin-wordpress/issues). Your feedback helps us improve!
+
 ---
 
 Made with ❤️ for the WordPress community
